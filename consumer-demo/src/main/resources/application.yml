@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: consumer
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true     #当使用ribbon负载均衡地时候，防止获取挂掉的服务，使用重试机制
+server:
+  port: 8081
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10087/eureka
+    registry-fetch-interval-seconds: 5  #拉取服务
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+
+ribbon:
+  NFLoadBalanceRuleClassName: com.netflix.loadbalancer.RandomRule
+  ConnectTimeout: 250 # ribbon的连接超时时间
+  ReadTimeout: 1000 # ribbon读取数据的超时时间
+  OkToRetryOnAllOperations: true #是否对所有操作进行重试
+  MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  MaxAutoRetries: 1 #对当前实例的重试次数
+hystrix:
+  command:
+    default:  #default全局有效，service id指定应用有效
+      execution:
+        timeout:
+          #如果enabled设置为false，则请求超时交给ribbon控制,为true,则超时作为熔断根据
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000 #断路器超时时间，默认1000ms
+
+#feign.hystrix.enabled: true
+feign:
+  hystrix:
+    enabled: true
