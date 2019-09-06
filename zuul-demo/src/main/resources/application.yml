@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: api-getway
+server:
+  port: 9000
+zuul:
+  retryable: true
+  prefix: /api
+  routes:
+    produce: /produce/**
+eureka:
+  client:
+    registry-fetch-interval-seconds: 5
+    service-url:
+      defaultZone: http://127.0.0.1:10087/eureka
+ribbon:
+  NFLoadBalanceRuleClassName: com.netflix.loadbalancer.RandomRule
+  ConnectTimeout: 250 # ribbon的连接超时时间
+  ReadTimeout: 1000 # ribbon读取数据的超时时间
+  OkToRetryOnAllOperations: true #是否对所有操作进行重试
+  MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  MaxAutoRetries: 1 #对当前实例的重试次数
+hystrix:
+  command:
+    default:  #default全局有效，service id指定应用有效
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000 #断路器超时时间，默认1000ms
